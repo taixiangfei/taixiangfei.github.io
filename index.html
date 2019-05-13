@@ -160,27 +160,54 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-浏览器前进or后退最简单的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-js判断当前页面是后退过来的还是前进过来的" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/12/浏览器前进or后退最简单的方法/">浏览器前进or后退最简单的方法</a>
+      <a class="article-title" href="/2019/05/12/js判断当前页面是后退过来的还是前进过来的/">js判断当前页面在history记录中是前进过来的还是后退过来的</a>
     </h1>
   
 
         
-        <a href="/2019/05/12/浏览器前进or后退最简单的方法/" class="archive-article-date">
-  	<time datetime="2019-05-12T08:10:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
+        <a href="/2019/05/12/js判断当前页面是后退过来的还是前进过来的/" class="archive-article-date">
+  	<time datetime="2019-05-12T10:52:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="需求是这样的，ABC三个页面，A→B→C，A页面是个主页，B页面是个列表页，C页面是个详情页。列表页前往详情页再返回后，需要列表页浏览位置保留在去详情页之前的位置，而主页前往列表页的时候不需要保留最小位置。这个问题与本文标题有啥关系呢，请看下文"><a href="#需求是这样的，ABC三个页面，A→B→C，A页面是个主页，B页面是个列表页，C页面是个详情页。列表页前往详情页再返回后，需要列表页浏览位置保留在去详情页之前的位置，而主页前往列表页的时候不需要保留最小位置。这个问题与本文标题有啥关系呢，请看下文" class="headerlink" title="需求是这样的，ABC三个页面，A→B→C，A页面是个主页，B页面是个列表页，C页面是个详情页。列表页前往详情页再返回后，需要列表页浏览位置保留在去详情页之前的位置，而主页前往列表页的时候不需要保留最小位置。这个问题与本文标题有啥关系呢，请看下文"></a>需求是这样的，ABC三个页面，A→B→C，A页面是个主页，B页面是个列表页，C页面是个详情页。列表页前往详情页再返回后，需要列表页浏览位置保留在去详情页之前的位置，而主页前往列表页的时候不需要保留最小位置。这个问题与本文标题有啥关系呢，请看下文</h3><p>据我测试，有的网页不作任何处理，也能在返回的时候自动保留位置呢。这种情况有个必备条件，就是必须使用网页默认的滚动条(document.documentElement.scrollTop)，不能自己设置滚动条↓，下边这种情况网页就不会返回原位置<br><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">html, <span class="keyword">body&#123;</span></span><br><span class="line"><span class="keyword"> </span>   height: <span class="number">100</span>%<span class="comment">;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#app&#123;</span></span><br><span class="line"><span class="symbol">    height:</span> <span class="number">100</span>%<span class="comment">;</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="处理方案："><a href="#处理方案：" class="headerlink" title="处理方案："></a>处理方案：</h3><p>如果是用vue里开发的单页面应用里边，那简单，一通动态改变路由的keepalive，OK了。但现在这个项目是传统的网页开发模式，怎么在最小改动的情况下实现这个需求呢？</p>
+<h4 id="问1：那如何不使用默认滚动条来实现需求呢？"><a href="#问1：那如何不使用默认滚动条来实现需求呢？" class="headerlink" title="问1：那如何不使用默认滚动条来实现需求呢？"></a>问1：那如何不使用默认滚动条来实现需求呢？</h4><p>记录离开列表页时滚动条元素的scrollTop，然后再回来时读取保存的scrollTop并赋值给滚动条元素。</p>
+<h4 id="问2：去详情页元素就是个a标签，点了后就直接跳去详情页了，我什么时候记录scrollTop呢？"><a href="#问2：去详情页元素就是个a标签，点了后就直接跳去详情页了，我什么时候记录scrollTop呢？" class="headerlink" title="问2：去详情页元素就是个a标签，点了后就直接跳去详情页了，我什么时候记录scrollTop呢？"></a>问2：去详情页元素就是个a标签，点了后就直接跳去详情页了，我什么时候记录scrollTop呢？</h4><p>这里需要用到一个DOM的事件 </p>
+<blockquote>
+<h3 id="unload"><a href="#unload" class="headerlink" title="unload"></a>unload</h3><p>unload事件 发生于当用户离开页面时发生的事件(通过点击一个连接，提交表单，关闭浏览器窗口等等。)</p>
+</blockquote>
+<p>有了它，需求就可以实现了。<br>我们只需要在unload事件触发的时候记录下scrollTop，然后在页面load事件中读取存好的scrollTop。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 离开页面触发</span></span><br><span class="line"><span class="built_in">window</span>.onunload=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">// 此处作者用sessionStorage来保存scrollTop，后边item_list用来分辨是哪个页面的scrollTop</span></span><br><span class="line">    sessionStorage.setItem(<span class="string">'scrollTop_item_list'</span>, that.$refs.scrollBox.scrollTop)</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 加载页面触发</span></span><br><span class="line"><span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(sessionStorage.scrollTop_item_list &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        ... 操作滚动条到指定位置</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上边的打代码，离开列表页的时候scrollTop就被保存到sessionStorage里边了，再回来也能个滚动到原位置了</p>
+<hr>
+<p>然而虽然实现了功能，但是我从B页面返回A页面，然后从A页面再进B页面，也滚动到记录的那个位置了，这叫实现需求了？</p>
+<h4 id="问3：怎么知道当前所在的B列表页面是从A入口页面过来的还是从C详情页面返回的呢？"><a href="#问3：怎么知道当前所在的B列表页面是从A入口页面过来的还是从C详情页面返回的呢？" class="headerlink" title="问3：怎么知道当前所在的B列表页面是从A入口页面过来的还是从C详情页面返回的呢？"></a>问3：怎么知道当前所在的B列表页面是从A入口页面过来的还是从C详情页面返回的呢？</h4><p>百度一下，解决方法不少，然后过于繁琐。这里提供一个最简单、改动最小的方法：</p>
+<p>首先我们在不通情况下打印下window.history对象，观察它的值<br>A入口页 前进到 B列表页<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">console.log(window.history) <span class="regexp">//</span> 在B页面打印</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 结果如下：</span><br><span class="line"><span class="regexp">//</span> &#123;</span><br><span class="line"><span class="regexp">//</span>    length: <span class="number">11</span></span><br><span class="line"><span class="regexp">//</span>    scrollRestoration: <span class="string">"auto"</span></span><br><span class="line"><span class="regexp">//</span>    state: &#123;</span><br><span class="line"><span class="regexp">//</span>        key: <span class="string">"ay7fjg"</span></span><br><span class="line"><span class="regexp">//</span>    &#125;</span><br><span class="line"><span class="regexp">//</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>C详情页 后退到 B列表页<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">console.log(window.history) <span class="regexp">//</span> 在B页面打印</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 结果如下：</span><br><span class="line"><span class="regexp">//</span> &#123;</span><br><span class="line"><span class="regexp">//</span>    length: <span class="number">12</span></span><br><span class="line"><span class="regexp">//</span>    scrollRestoration: <span class="string">"auto"</span></span><br><span class="line"><span class="regexp">//</span>    state: &#123;</span><br><span class="line"><span class="regexp">//</span>        key: <span class="string">"ay7fjg"</span></span><br><span class="line"><span class="regexp">//</span>    &#125;</span><br><span class="line"><span class="regexp">//</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="仔细观察，我们发现-A前进到B-C返回到B，window-history-state-key的值是相同的。WTF-大胆猜测这就是我们需要动动，还是再验证一下。"><a href="#仔细观察，我们发现-A前进到B-C返回到B，window-history-state-key的值是相同的。WTF-大胆猜测这就是我们需要动动，还是再验证一下。" class="headerlink" title="仔细观察，我们发现 A前进到B,C返回到B，window.history.state.key的值是相同的。WTF, 大胆猜测这就是我们需要动动，还是再验证一下。"></a>仔细观察，我们发现 A前进到B,C返回到B，window.history.state.key的值是相同的。WTF, 大胆猜测这就是我们需要动动，还是再验证一下。</h4><h5 id="于是我在当前的B页面返回A页面，然后再次从A页面进入B页面"><a href="#于是我在当前的B页面返回A页面，然后再次从A页面进入B页面" class="headerlink" title="于是我在当前的B页面返回A页面，然后再次从A页面进入B页面"></a>于是我在当前的B页面返回A页面，然后再次从A页面进入B页面</h5><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">console.log(window.history) <span class="regexp">//</span> 在B页面打印</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 结果如下：</span><br><span class="line"><span class="regexp">//</span> &#123;</span><br><span class="line"><span class="regexp">//</span>    length: <span class="number">11</span></span><br><span class="line"><span class="regexp">//</span>    scrollRestoration: <span class="string">"auto"</span></span><br><span class="line"><span class="regexp">//</span>    state: &#123;</span><br><span class="line"><span class="regexp">//</span>        key: <span class="string">"0bkxgl"</span></span><br><span class="line"><span class="regexp">//</span>    &#125;</span><br><span class="line"><span class="regexp">//</span> &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="再从B页面进入C页面，并返回B页面"><a href="#再从B页面进入C页面，并返回B页面" class="headerlink" title="再从B页面进入C页面，并返回B页面"></a>再从B页面进入C页面，并返回B页面</h5><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">console.log(window.history) <span class="regexp">//</span> 在B页面打印</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 结果如下：</span><br><span class="line"><span class="regexp">//</span> &#123;</span><br><span class="line"><span class="regexp">//</span>    length: <span class="number">12</span></span><br><span class="line"><span class="regexp">//</span>    scrollRestoration: <span class="string">"auto"</span></span><br><span class="line"><span class="regexp">//</span>    state: &#123;</span><br><span class="line"><span class="regexp">//</span>        key: <span class="string">"0bkxgl"</span></span><br><span class="line"><span class="regexp">//</span>    &#125;</span><br><span class="line"><span class="regexp">//</span> &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p>相信大家已经看出来了，这个key值其实是浏览器随机生成的用来表示当前url的，在从A页面前进到B页面的时候按规则随机生成，在从C页面后退B页面时候保持不变。</p>
+</blockquote>
+</blockquote>
+<p>这样我们就可以在B列表页面判断这个key值是否变化来得知当前页面是前进还是后退过来的</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 离开页面触发</span><br><span class="line">window.onunload=function()&#123;</span><br><span class="line">    // 此处作者用sessionStorage来保存scrollTop，后边item_list用来分辨是哪个页面的scrollTop</span><br><span class="line">    sessionStorage.<span class="built_in">set</span>Item('scrollTop_item_list', that.<span class="variable">$refs</span>.scrollBox.scrollTop)</span><br><span class="line">&#125;;</span><br><span class="line">// 加载页面触发</span><br><span class="line">window.onload = function()&#123;</span><br><span class="line">    // 判断 sessionStorage存储的<span class="keyword">state</span>Key_item_list值是否与window.history.<span class="keyword">state</span>.key一致，相同表示C后退到B，不同表示A前进到B</span><br><span class="line">    if(sessionStorage.<span class="keyword">state</span>Key_item_list &amp;&amp; sessionStorage.<span class="keyword">state</span>Key_item_list === window.history.<span class="keyword">state</span>.key)&#123;</span><br><span class="line">        // C 后退到 B</span><br><span class="line">        if(sessionStorage.scrollTop_item_list &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            ... 操作滚动条到指定位置</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        // A 前进到 B 保存key值</span><br><span class="line">        sessionStorage.<span class="built_in">set</span>Item('<span class="keyword">state</span>Key_item_list', window.history.<span class="keyword">state</span>.key)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这是自己的第一篇帖子，’处贴’！呼呼，感觉写了好多废话，如有错误，请指正啊(<a href="mailto:501338254@qq.com" target="_blank" rel="noopener">501338254@qq.com</a>)，谢谢。 </p>
+</blockquote>
+
       
 
       
@@ -188,11 +215,37 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">js</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">浏览器特性</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/category//" class="article-tag-list-link color4">category</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/05/12/浏览器前进or后退最简单的方法/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/05/12/js判断当前页面是后退过来的还是前进过来的/">展开全文 >></a>
         </p>
       
 
@@ -384,6 +437,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">js</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">浏览器特性</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
