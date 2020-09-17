@@ -205,7 +205,7 @@
 <p>这样我们就可以在B列表页面判断这个key值是否变化来得知当前页面是前进还是后退过来的</p>
 <figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 离开页面触发</span><br><span class="line">window.onunload=function()&#123;</span><br><span class="line">    // 此处作者用sessionStorage来保存scrollTop，后边item_list用来分辨是哪个页面的scrollTop</span><br><span class="line">    sessionStorage.<span class="built_in">set</span>Item('scrollTop_item_list', that.<span class="variable">$refs</span>.scrollBox.scrollTop)</span><br><span class="line">&#125;;</span><br><span class="line">// 加载页面触发</span><br><span class="line">window.onload = function()&#123;</span><br><span class="line">    // 判断 sessionStorage存储的<span class="keyword">state</span>Key_item_list值是否与window.history.<span class="keyword">state</span>.key一致，相同表示C后退到B，不同表示A前进到B</span><br><span class="line">    if(sessionStorage.<span class="keyword">state</span>Key_item_list &amp;&amp; sessionStorage.<span class="keyword">state</span>Key_item_list === window.history.<span class="keyword">state</span>.key)&#123;</span><br><span class="line">        // C 后退到 B</span><br><span class="line">        if(sessionStorage.scrollTop_item_list &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            ... 操作滚动条到指定位置</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        // A 前进到 B 保存key值</span><br><span class="line">        sessionStorage.<span class="built_in">set</span>Item('<span class="keyword">state</span>Key_item_list', window.history.<span class="keyword">state</span>.key)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>这是自己的第一篇帖子，’处贴’！呼呼，感觉写了好多废话，如有错误，请指正啊(<a href="mailto:501338254@qq.com" target="_blank" rel="noopener">501338254@qq.com</a>)，谢谢。 </p>
+<p>如有错误，请指正啊(<a href="mailto:501338254@qq.com" target="_blank" rel="noopener">501338254@qq.com</a>)，谢谢。 </p>
 </blockquote>
 
       
@@ -356,7 +356,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 Tony Zhang
+    		&copy; 2020 Tony Zhang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
